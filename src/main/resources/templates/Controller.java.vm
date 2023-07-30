@@ -1,0 +1,97 @@
+package ${package.Controller};
+
+#if(${swagger})
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+#end
+import lombok.RequiredArgsConstructor;
+import ${response};
+import ${pageDTO};
+import ${pageVO};
+import org.springframework.web.bind.annotation.*;
+import ${package.ServiceImpl}.${table.serviceImplName};
+import ${package.Other}.${entity}.${entity}DTO;
+import ${package.Other}.${entity}.${entity}VO;
+
+## 判断是否包含父类
+#if(${superControllerClassPackage})
+import ${superControllerClassPackage};
+#end
+
+/**
+ * $!{table.comment}Controller
+ *
+ * @author ${author}
+ * @since ${date}
+ */
+@RequiredArgsConstructor
+#if(${swagger})
+@Api(tags = "$!{table.name}接口")
+#end
+#if(${restControllerStyle})
+@RestController
+#else
+@Controller
+#end
+@RequestMapping("#if(${package.ModuleName})/${package.ModuleName}#end/#if(${controllerMappingHyphenStyle})${controllerMappingHyphen}#else${table.entityPath}#end")
+#if(${superControllerClass})
+public class ${table.controllerName} extends ${superControllerClass} {
+#else
+public class ${table.controllerName} {
+#end
+
+    private final ${table.serviceImplName} service;
+
+#foreach($field in ${table.fields})
+    #if(${field.keyFlag})
+## 主键类型
+        #set($idType=${field.propertyType})
+## 主键名称
+        #set($idName=${field.propertyName})
+## 跳出
+        #break
+    #end
+#end
+    @PostMapping("/create")
+#if(${swagger})
+    @ApiOperation(value = "新增")
+#end
+    public Response<Void> create(@RequestBody ${entity}DTO $!{table.name}Dto) {
+        service.create($!{table.name}Dto);
+        return Response.ok();
+    }
+
+    @DeleteMapping("/delete/{${idName}}")
+#if(${swagger})
+    @ApiOperation(value = "删除")
+#end
+    public Response<Void> delete(@PathVariable("${idName}") ${idType} ${idName}) {
+        service.delete(${idName});
+        return Response.ok();
+    }
+
+    @PutMapping("/update")
+#if(${swagger})
+    @ApiOperation(value = "修改")
+#end
+    public Response<Void> update(@RequestBody ${entity}DTO $!{table.name}Dto) {
+        service.update($!{table.name}Dto);
+        return Response.ok();
+    }
+
+    @GetMapping("/{${idName}}")
+#if(${swagger})
+    @ApiOperation(value = "单条查询")
+#end
+    public Response<${entity}VO> info(@PathVariable("${idName}") ${idType} ${idName}) {
+        return Response.ok(service.infoById(${idName}));
+    }
+
+    @PostMapping("/findPage")
+#if(${swagger})
+    @ApiOperation(value = "分页查询")
+#end
+    public Response<PageVO<${entity}VO>> page(@RequestBody PageDTO pageDto) {
+        return Response.ok(service.page(pageDto));
+    }
+}

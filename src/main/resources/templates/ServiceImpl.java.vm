@@ -1,0 +1,55 @@
+package ${package.ServiceImpl};
+
+import ${package.Entity.replace("entity","dao")}.${table.entityName}Dao;
+import ${package.Entity}.${entity};
+import ${package.Other}.${entity}.${entity}DTO;
+import ${package.Other}.${entity}.${entity}VO;
+import ${pageDTO};
+import ${pageVO};
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+/**
+ * $!{table.comment} 服务类
+ *
+ * @author ${author}
+ * @since ${date}
+ */
+
+#set($daoName=${table.name}+"Dao")
+#set($idType="Long")
+#set($idName="id")
+#foreach($field in ${table.fields})
+    #if(${field.keyFlag})
+        #set($idType=${field.propertyType})
+        #set($idName=${field.propertyName})
+        #break
+    #end
+#end
+@Service
+@RequiredArgsConstructor
+public class ${table.serviceImplName} {
+
+    private final ${table.mapperName.replace("Mapper", "Dao")} ${daoName};
+
+    public void create(${entity}DTO $!{table.name}Dto) {
+        ${daoName}.save(null);
+    }
+
+    public void delete(${idType} ${idName}) {
+        ${daoName}.removeById(${idName});
+    }
+
+    public void update(${entity}DTO $!{table.name}Dto) {
+
+    }
+
+    public ${entity}VO infoById(${idType} ${idName}) {
+        ${entity} ${table.name} = ${daoName}.getById(${idName});
+        return null;
+    }
+
+    public PageVO<${entity}VO> page(PageDTO pageDto) {
+        return PageVO.of();
+    }
+}
